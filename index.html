@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0e14" />
+<title>Circle Calendário</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --face: #11151d;
+    --face-2: #161b25;
+    --ring: #1f2633;
+    --text: #e7ecf3;
+    --muted: #7c8699;
+    --accent: #ffb86b;
+    --accent-2: #6bd1ff;
+    --today: #ff5d73;
+    --selected: #ffd166;
+    --shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, #141a26 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    overscroll-behavior: none;
+    user-select: none;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+
+  header {
+    width: 100%;
+    padding: 18px 20px 6px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  header .month-year {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  header .weekday {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    min-height: 0;
+  }
+
+  .clock {
+    width: min(92vw, 92svh, 560px);
+    aspect-ratio: 1 / 1;
+    position: relative;
+    filter: drop-shadow(var(--shadow));
+    touch-action: manipulation;
+  }
+
+  svg.clock-face {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .month-label {
+    font-size: 5.2px;
+    fill: var(--muted);
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: fill 0.2s ease;
+  }
+  .month-label.current { fill: var(--accent); }
+  .month-label:active { fill: var(--text); }
+
+  .day-label {
+    font-size: 3.6px;
+    fill: var(--text);
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-weight: 500;
+    cursor: pointer;
+    transition: fill 0.2s ease;
+  }
+  .day-label.dim { fill: var(--muted); opacity: 0.5; }
+  .day-label.today {
+    fill: var(--today);
+    font-weight: 700;
+    font-size: 4.4px;
+  }
+  .day-label.selected {
+    fill: var(--selected);
+    font-weight: 700;
+  }
+
+  .tick { stroke: var(--ring); }
+  .tick-major { stroke: var(--muted); }
+
+  .hand-month { stroke: var(--accent); stroke-linecap: round; }
+  .hand-day   { stroke: var(--accent-2); stroke-linecap: round; }
+  .hand-sec   { stroke: var(--today); stroke-linecap: round; }
+
+  .center-dot { fill: var(--text); }
+  .center-ring { fill: none; stroke: var(--ring); }
+
+  footer {
+    width: 100%;
+    padding: 6px 20px 18px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .date-display {
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  .date-display strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .controls button {
+    background: var(--face-2);
+    color: var(--text);
+    border: 1px solid var(--ring);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 36px;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+  .controls button:active { background: var(--ring); transform: scale(0.97); }
+  .controls .today-btn { color: var(--accent); border-color: var(--accent); background: transparent; }
+
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend .dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .legend .m { background: var(--accent); }
+  .legend .d { background: var(--accent-2); }
+  .legend .s { background: var(--today); }
+
+  @media (max-height: 640px) {
+    header { padding: 10px 20px 2px; }
+    header .month-year { font-size: 18px; }
+    header .weekday { font-size: 11px; margin-top: 2px; }
+    footer { padding: 4px 20px 10px; }
+    .clock { width: min(85vw, 85svh, 420px); }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="month-year" id="monthYear">—</div>
+    <div class="weekday" id="weekday">—</div>
+  </header>
+
+  <main>
+    <div class="clock">
+      <svg class="clock-face" viewBox="0 0 100 100" id="svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="faceGrad" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#1c2330"/>
+            <stop offset="100%" stop-color="#0e131c"/>
+          </radialGradient>
+        </defs>
+
+        <circle cx="50" cy="50" r="49" fill="url(#faceGrad)" stroke="#1f2633" stroke-width="0.4"/>
+        <circle cx="50" cy="50" r="44" fill="none" stroke="#1a212c" stroke-width="0.3"/>
+        <circle cx="50" cy="50" r="33" fill="none" stroke="#1a212c" stroke-width="0.3"/>
+
+        <g id="ticks"></g>
+        <g id="months"></g>
+        <g id="days"></g>
+
+        <line id="handMonth" class="hand-month" x1="50" y1="50" x2="50" y2="50" stroke-width="1.4"/>
+        <line id="handDay"   class="hand-day"   x1="50" y1="50" x2="50" y2="50" stroke-width="1.0"/>
+        <line id="handSec"   class="hand-sec"   x1="50" y1="50" x2="50" y2="50" stroke-width="0.4"/>
+
+        <circle class="center-ring" cx="50" cy="50" r="2.2" stroke-width="0.5"/>
+        <circle class="center-dot"  cx="50" cy="50" r="1.1"/>
+      </svg>
+    </div>
+  </main>
+
+  <footer>
+    <div class="date-display" id="dateDisplay">—</div>
+    <div class="controls">
+      <button id="prevBtn" aria-label="Mês anterior">‹</button>
+      <button class="today-btn" id="todayBtn">Hoje</button>
+      <button id="nextBtn" aria-label="Próximo mês">›</button>
+    </div>
+    <div class="legend">
+      <span><span class="dot m"></span>Mês</span>
+      <span><span class="dot d"></span>Dia</span>
+      <span><span class="dot s"></span>Hoje</span>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  'use strict';
+
+  const MONTHS_PT = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+  const MONTHS_PT_SHORT = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+  const WEEKDAYS_PT = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const CX = 50, CY = 50;
+
+  const ticksG  = document.getElementById('ticks');
+  const monthsG = document.getElementById('months');
+  const daysG   = document.getElementById('days');
+
+  const handMonth = document.getElementById('handMonth');
+  const handDay   = document.getElementById('handDay');
+  const handSec   = document.getElementById('handSec');
+
+  const monthYearEl = document.getElementById('monthYear');
+  const weekdayEl   = document.getElementById('weekday');
+  const dateDispEl  = document.getElementById('dateDisplay');
+
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const todayBtn = document.getElementById('todayBtn');
+
+  const today = new Date();
+  const state = {
+    year: today.getFullYear(),
+    month: today.getMonth(),
+    selectedDay: today.getDate()
+  };
+
+  function polar(cx, cy, r, angleDeg) {
+    const a = (angleDeg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  function daysInMonth(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  }
+
+  function buildTicks() {
+    ticksG.innerHTML = '';
+    for (let i = 0; i < 60; i++) {
+      const angle = i * 6;
+      const major = i % 5 === 0;
+      const r1 = major ? 46.5 : 47.2;
+      const r2 = 48.4;
+      const p1 = polar(CX, CY, r1, angle);
+      const p2 = polar(CX, CY, r2, angle);
+      const line = document.createElementNS(SVG_NS, 'line');
+      line.setAttribute('x1', p1.x);
+      line.setAttribute('y1', p1.y);
+      line.setAttribute('x2', p2.x);
+      line.setAttribute('y2', p2.y);
+      line.setAttribute('class', major ? 'tick tick-major' : 'tick');
+      line.setAttribute('stroke-width', major ? 0.5 : 0.25);
+      ticksG.appendChild(line);
+    }
+  }
+
+  function buildMonths() {
+    monthsG.innerHTML = '';
+    for (let m = 0; m < 12; m++) {
+      const angle = m * 30;
+      const p = polar(CX, CY, 41.5, angle);
+      const text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('x', p.x);
+      text.setAttribute('y', p.y);
+      text.setAttribute('class', 'month-label' + (m === state.month ? ' current' : ''));
+      text.textContent = MONTHS_PT_SHORT[m];
+      text.addEventListener('click', () => {
+        state.month = m;
+        if (state.selectedDay > daysInMonth(state.year, state.month)) {
+          state.selectedDay = daysInMonth(state.year, state.month);
+        }
+        render();
+      });
+      monthsG.appendChild(text);
+    }
+  }
+
+  function buildDays() {
+    daysG.innerHTML = '';
+    const total = daysInMonth(state.year, state.month);
+    const isCurrentMonth =
+      state.year === today.getFullYear() && state.month === today.getMonth();
+
+    for (let d = 1; d <= total; d++) {
+      const angle = ((d - 1) / total) * 360;
+      const p = polar(CX, CY, 28, angle);
+
+      const text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('x', p.x);
+      text.setAttribute('y', p.y);
+
+      const classes = ['day-label'];
+      if (isCurrentMonth && d === today.getDate()) classes.push('today');
+      else if (d === state.selectedDay) classes.push('selected');
+      else if (total > 28 && d > 28 && d !== state.selectedDay) classes.push('dim');
+
+      text.setAttribute('class', classes.join(' '));
+      text.textContent = d;
+      text.addEventListener('click', () => {
+        state.selectedDay = d;
+        render();
+      });
+      daysG.appendChild(text);
+    }
+  }
+
+  function updateHands() {
+    const now = new Date();
+    const totalDays = daysInMonth(state.year, state.month);
+
+    const monthAngle = state.month * 30 + ((state.selectedDay - 1) / totalDays) * 30;
+    const dayAngle   = ((state.selectedDay - 1) / totalDays) * 360;
+
+    setHand(handMonth, monthAngle, 38);
+    setHand(handDay,   dayAngle, 26);
+
+    const isCurrentMonth =
+      state.year === today.getFullYear() && state.month === today.getMonth();
+    if (isCurrentMonth) {
+      const secAngle = now.getSeconds() * 6 + now.getMilliseconds() * 0.006;
+      setHand(handSec, secAngle, 44);
+      handSec.style.display = '';
+    } else {
+      handSec.style.display = 'none';
+    }
+  }
+
+  function setHand(el, angleDeg, length) {
+    const p = polar(CX, CY, length, angleDeg);
+    el.setAttribute('x2', p.x);
+    el.setAttribute('y2', p.y);
+  }
+
+  function updateHeader() {
+    monthYearEl.textContent = MONTHS_PT[state.month] + ' ' + state.year;
+
+    const dateObj = new Date(state.year, state.month, state.selectedDay);
+    weekdayEl.textContent = WEEKDAYS_PT[dateObj.getDay()];
+
+    const isToday =
+      state.year === today.getFullYear() &&
+      state.month === today.getMonth() &&
+      state.selectedDay === today.getDate();
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const dateStr = pad(state.selectedDay) + '/' + pad(state.month + 1) + '/' + state.year;
+    dateDispEl.innerHTML = (isToday ? '<strong>Hoje</strong> · ' : '') + dateStr;
+  }
+
+  function render() {
+    buildMonths();
+    buildDays();
+    updateHands();
+    updateHeader();
+  }
+
+  prevBtn.addEventListener('click', () => {
+    state.month--;
+    if (state.month < 0) { state.month = 11; state.year--; }
+    if (state.selectedDay > daysInMonth(state.year, state.month)) {
+      state.selectedDay = daysInMonth(state.year, state.month);
+    }
+    render();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    state.month++;
+    if (state.month > 11) { state.month = 0; state.year++; }
+    if (state.selectedDay > daysInMonth(state.year, state.month)) {
+      state.selectedDay = daysInMonth(state.year, state.month);
+    }
+    render();
+  });
+
+  todayBtn.addEventListener('click', () => {
+    const now = new Date();
+    state.year = now.getFullYear();
+    state.month = now.getMonth();
+    state.selectedDay = now.getDate();
+    render();
+  });
+
+  let touchStartX = null;
+  const clockEl = document.querySelector('.clock');
+  clockEl.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+  clockEl.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) nextBtn.click(); else prevBtn.click();
+    }
+    touchStartX = null;
+  });
+
+  buildTicks();
+  render();
+
+  setInterval(() => {
+    const isCurrentMonth =
+      state.year === today.getFullYear() && state.month === today.getMonth();
+    if (isCurrentMonth) {
+      const now = new Date();
+      const secAngle = now.getSeconds() * 6 + now.getMilliseconds() * 0.006;
+      setHand(handSec, secAngle, 44);
+    }
+  }, 1000);
+
+  setInterval(() => {
+    const now = new Date();
+    if (now.getDate() !== today.getDate()) {
+      today.setTime(now.getTime());
+      render();
+    }
+  }, 60000);
+})();
+</script>
+</body>
+</html>
