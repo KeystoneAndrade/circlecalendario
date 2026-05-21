@@ -15,11 +15,11 @@
     --muted: #7c8699;
     --accent: #ffb86b;
 
-    --day:   rgba(255, 220, 150, 0.06);
-    --night: rgba(80, 100, 160, 0.16);
+    --day-tint:   rgba(255, 220, 150, 0.05);
+    --night-tint: rgba(80, 110, 180, 0.10);
 
-    --hand-hour:   rgba(255, 255, 255, 0.85);
-    --hand-minute: rgba(220, 225, 235, 0.7);
+    --hand-hour:   rgba(255, 255, 255, 0.9);
+    --hand-minute: rgba(220, 225, 235, 0.75);
     --hand-second: #ff5d73;
 
     --shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
@@ -28,9 +28,7 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
+    margin: 0; padding: 0; height: 100%;
     background: radial-gradient(circle at 50% 0%, #141a26 0%, var(--bg) 60%);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -40,13 +38,10 @@
   }
 
   body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: 100vh; min-height: 100svh;
   }
 
   header {
@@ -56,20 +51,55 @@
     flex-shrink: 0;
   }
   .date-main { font-size: 20px; font-weight: 600; letter-spacing: 0.3px; }
-  .weekday   { font-size: 12px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 2px; }
+  .weekday { font-size: 12px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 2px; }
 
-  main {
-    flex: 1;
-    width: 100%;
+  .mode-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 14px;
-    min-height: 0;
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .mode-toggle .arrow {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    padding: 4px 10px;
+    cursor: pointer;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .mode-toggle .arrow:active { color: var(--text); }
+  .mode-toggle .label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--face-2);
+    border: 1px solid var(--ring);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    min-width: 110px;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .mode-toggle .label.day   { color: var(--accent); border-color: var(--accent); }
+  .mode-toggle .label.night { color: #9bb1ff; border-color: #9bb1ff; }
+  .mode-toggle .icon { font-size: 16px; }
+
+  main {
+    flex: 1; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 14px; min-height: 0;
   }
 
   .clock {
-    width: min(92vw, 88svh, 560px);
+    width: min(92vw, 86svh, 560px);
     aspect-ratio: 1 / 1;
     position: relative;
     filter: drop-shadow(var(--shadow));
@@ -78,31 +108,28 @@
   svg.clock-face { width: 100%; height: 100%; display: block; }
 
   .hour-label {
-    font-size: 3.4px;
-    fill: var(--muted);
+    font-size: 5px;
+    fill: var(--text);
     text-anchor: middle;
     dominant-baseline: middle;
-    font-weight: 500;
+    font-weight: 600;
   }
-  .hour-label.major { font-size: 4.2px; fill: var(--text); font-weight: 600; }
+  .hour-label.major { font-size: 6px; }
 
-  .tick       { stroke: rgba(255, 255, 255, 0.18); }
-  .tick-major { stroke: rgba(255, 255, 255, 0.5); }
+  .tick       { stroke: rgba(255, 255, 255, 0.22); }
+  .tick-major { stroke: rgba(255, 255, 255, 0.55); }
 
   .event-arc {
     cursor: pointer;
-    transition: opacity 0.15s ease, transform 0.1s ease;
-    transform-origin: 50px 50px;
+    transition: opacity 0.15s ease;
   }
   .event-arc:active { opacity: 0.7; }
   .event-label {
-    font-size: 2.8px;
-    fill: rgba(0, 0, 0, 0.85);
-    text-anchor: middle;
-    dominant-baseline: middle;
+    font-size: 3px;
+    fill: rgba(0, 0, 0, 0.88);
     font-weight: 700;
     pointer-events: none;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
   }
 
   .hand-hour   { stroke: var(--hand-hour);   stroke-linecap: round; }
@@ -116,10 +143,8 @@
     width: 100%;
     padding: 6px 16px 16px;
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
   }
 
   .time-display {
@@ -127,12 +152,11 @@
     font-weight: 600;
     letter-spacing: 1px;
     font-variant-numeric: tabular-nums;
+    min-height: 28px;
   }
 
   .controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     gap: 10px;
   }
   .controls button {
@@ -160,23 +184,17 @@
     padding: 8px 16px;
   }
 
-  /* Sheet (modal) */
+  /* Sheet */
   .sheet-backdrop {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; pointer-events: none;
     transition: opacity 0.2s ease;
     z-index: 10;
   }
   .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
-
   .sheet {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: fixed; left: 0; right: 0; bottom: 0;
     background: #141925;
     border-top-left-radius: 18px;
     border-top-right-radius: 18px;
@@ -189,33 +207,13 @@
     box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
   }
   .sheet.open { transform: translateY(0); }
+  .sheet-handle { width: 38px; height: 4px; background: var(--ring); border-radius: 2px; margin: 0 auto 12px; }
+  .sheet-title { font-size: 16px; font-weight: 600; margin-bottom: 14px; text-align: center; }
 
-  .sheet-handle {
-    width: 38px;
-    height: 4px;
-    background: var(--ring);
-    border-radius: 2px;
-    margin: 0 auto 12px;
-  }
-
-  .sheet-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 14px;
-    text-align: center;
-  }
-
-  .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
+  .form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
   .form-row label {
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.2px;
   }
   .form-row input[type="text"],
   .form-row input[type="time"] {
@@ -235,11 +233,7 @@
   .time-row { display: flex; gap: 10px; }
   .time-row .form-row { flex: 1; margin-bottom: 0; }
 
-  .color-grid {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 8px;
-  }
+  .color-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
   .color-swatch {
     aspect-ratio: 1 / 1;
     border-radius: 50%;
@@ -247,46 +241,30 @@
     border: 2px solid transparent;
     transition: transform 0.1s ease, border-color 0.15s ease;
   }
-  .color-swatch.selected {
-    border-color: var(--text);
-    transform: scale(1.1);
-  }
+  .color-swatch.selected { border-color: var(--text); transform: scale(1.1); }
 
-  .sheet-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-  }
+  .sheet-actions { display: flex; gap: 10px; margin-top: 14px; }
   .sheet-actions button {
-    flex: 1;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-    min-height: 44px;
-    border: 1px solid transparent;
+    flex: 1; padding: 12px; border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    min-height: 44px; border: 1px solid transparent;
   }
   .btn-cancel { background: transparent; color: var(--muted); border-color: var(--ring); }
   .btn-save   { background: var(--accent); color: var(--bg); }
   .btn-delete { background: transparent; color: #ff5d73; border-color: #ff5d73; }
   .sheet-actions button:active { transform: scale(0.98); }
 
-  .empty-hint {
-    font-size: 11px;
-    color: var(--muted);
-    text-align: center;
-    min-height: 14px;
-  }
+  .empty-hint { font-size: 11px; color: var(--muted); text-align: center; min-height: 14px; }
 
-  @media (max-height: 640px) {
+  @media (max-height: 700px) {
     header { padding: 8px 20px 2px; }
     .date-main { font-size: 17px; }
     .weekday { font-size: 10px; margin-top: 2px; }
+    .mode-toggle { margin-top: 6px; }
     footer { padding: 4px 16px 10px; gap: 6px; }
     .time-display { font-size: 18px; }
-    .clock { width: min(82vw, 78svh, 380px); }
+    .clock { width: min(82vw, 72svh, 380px); }
   }
 </style>
 </head>
@@ -294,23 +272,35 @@
   <header>
     <div class="date-main" id="dateMain">—</div>
     <div class="weekday" id="weekday">—</div>
+    <div class="mode-toggle">
+      <button class="arrow" id="modePrev" aria-label="Alternar relógio">‹</button>
+      <div class="label day" id="modeLabel">
+        <span class="icon" id="modeIcon">☀</span><span id="modeText">DIA</span>
+      </div>
+      <button class="arrow" id="modeNext" aria-label="Alternar relógio">›</button>
+    </div>
   </header>
 
   <main>
     <div class="clock">
       <svg class="clock-face" viewBox="0 0 100 100" id="svg" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="faceGrad" cx="50%" cy="40%" r="65%">
-            <stop offset="0%"  stop-color="#1c2330"/>
+          <radialGradient id="faceGradDay" cx="50%" cy="40%" r="65%">
+            <stop offset="0%"  stop-color="#1f2330"/>
             <stop offset="100%" stop-color="#0e131c"/>
+          </radialGradient>
+          <radialGradient id="faceGradNight" cx="50%" cy="40%" r="65%">
+            <stop offset="0%"  stop-color="#171c2c"/>
+            <stop offset="100%" stop-color="#0a0d17"/>
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" fill="url(#faceGrad)" stroke="#1f2633" stroke-width="0.4"/>
+        <circle id="faceBg" cx="50" cy="50" r="49" fill="url(#faceGradDay)" stroke="#1f2633" stroke-width="0.4"/>
+        <circle id="faceTint" cx="50" cy="50" r="48.5" fill="var(--day-tint)"/>
 
-        <g id="zones"></g>
         <g id="ticks"></g>
         <g id="hourLabels"></g>
+        <g id="textPaths"></g>
         <g id="events"></g>
 
         <line id="handHour"   class="hand-hour"   x1="50" y1="50" x2="50" y2="50" stroke-width="1.4"/>
@@ -373,30 +363,41 @@
 
   const WEEKDAYS_PT = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
   const MONTHS_PT   = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'];
 
-  const COLORS = [
-    '#ef4444', '#f97316', '#eab308', '#22c55e',
-    '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
-  ];
-
-  const STORAGE_KEY = 'circleCalendar.events.v1';
+  const STORAGE_KEY = 'circleCalendar.events.v2';
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const CX = 50, CY = 50;
 
-  // ---------- DOM ----------
-  const zonesG    = document.getElementById('zones');
-  const ticksG    = document.getElementById('ticks');
-  const hoursG    = document.getElementById('hourLabels');
-  const eventsG   = document.getElementById('events');
+  // Faixa horária de cada modo: [startHour, endHour], representa 12 horas contíguas
+  // Day: 06 → 18 ; Night: 18 → 30 (= 06 do dia seguinte)
+  const MODES = {
+    day:   { start: 6,  end: 18, icon: '☀', label: 'DIA',   className: 'day' },
+    night: { start: 18, end: 30, icon: '☾', label: 'NOITE', className: 'night' }
+  };
 
-  const handHour  = document.getElementById('handHour');
-  const handMin   = document.getElementById('handMinute');
-  const handSec   = document.getElementById('handSecond');
+  // ---------- DOM ----------
+  const ticksG     = document.getElementById('ticks');
+  const hoursG     = document.getElementById('hourLabels');
+  const eventsG    = document.getElementById('events');
+  const textPathsG = document.getElementById('textPaths');
+  const faceBg     = document.getElementById('faceBg');
+  const faceTint   = document.getElementById('faceTint');
+
+  const handHour = document.getElementById('handHour');
+  const handMin  = document.getElementById('handMinute');
+  const handSec  = document.getElementById('handSecond');
 
   const dateMainEl  = document.getElementById('dateMain');
   const weekdayEl   = document.getElementById('weekday');
   const timeEl      = document.getElementById('timeDisplay');
   const emptyHintEl = document.getElementById('emptyHint');
+
+  const modeLabel = document.getElementById('modeLabel');
+  const modeIcon  = document.getElementById('modeIcon');
+  const modeText  = document.getElementById('modeText');
+  const modePrev  = document.getElementById('modePrev');
+  const modeNext  = document.getElementById('modeNext');
 
   const prevBtn  = document.getElementById('prevBtn');
   const nextBtn  = document.getElementById('nextBtn');
@@ -417,9 +418,15 @@
   // ---------- Estado ----------
   const today = startOfDay(new Date());
   let viewDate = new Date(today.getTime());
+  let viewMode = currentMode();
   let events = loadEvents();
   let editingId = null;
   let selectedColor = COLORS[5];
+
+  function currentMode() {
+    const h = new Date().getHours();
+    return (h >= 6 && h < 18) ? 'day' : 'night';
+  }
 
   function startOfDay(d) {
     const x = new Date(d.getTime());
@@ -430,9 +437,7 @@
     const pad = (n) => String(n).padStart(2, '0');
     return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
   }
-  function isViewingToday() {
-    return viewDate.getTime() === today.getTime();
-  }
+  function isViewingToday() { return viewDate.getTime() === today.getTime(); }
 
   // ---------- Storage ----------
   function loadEvents() {
@@ -445,8 +450,14 @@
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(events)); } catch (e) {}
   }
 
-  // ---------- Geometria ----------
-  function hourToAngle(hour) { return (hour / 24) * 360; }
+  // ---------- Geometria 12h ----------
+  // No relógio de 12h: posição 12 (topo) = 0°, cresce horário.
+  // Para day clock (06–18): hora H → ((H - 6) / 12) * 360 + 180  (06h no fundo, 12h no topo)
+  // Para night clock (18–30): hora H → ((H - 18) / 12) * 360 + 180  (18h no fundo, 24h no topo)
+  function hourToAngle(H, modeKey) {
+    const m = MODES[modeKey];
+    return ((H - m.start) / 12) * 360 + 180;
+  }
   function polar(cx, cy, r, angleDeg) {
     const a = (angleDeg - 90) * Math.PI / 180;
     return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
@@ -467,94 +478,108 @@
       'Z'
     ].join(' ');
   }
+  // Caminho do TEXTO: arco simples no raio do meio, invertido se for na metade inferior
+  function textArcPath(cx, cy, r, startAngle, endAngle) {
+    let a1 = startAngle, a2 = endAngle, sweep = 1;
+    const mid = ((a1 + a2) / 2 + 360) % 360;
+    if (mid > 90 && mid < 270) {
+      // Metade inferior: inverte sentido para texto ficar de cabeça pra cima
+      a1 = endAngle; a2 = startAngle; sweep = 0;
+    }
+    const largeArc = Math.abs(a2 - a1) > 180 ? 1 : 0;
+    const p1 = polar(cx, cy, r, a1);
+    const p2 = polar(cx, cy, r, a2);
+    return ['M', p1.x, p1.y, 'A', r, r, 0, largeArc, sweep, p2.x, p2.y].join(' ');
+  }
   function timeToHours(t) {
     if (!t) return 0;
     const [h, m] = t.split(':').map(Number);
     return h + (m || 0) / 60;
   }
-  function hoursToTime(h) {
-    const hh = Math.floor(h);
-    const mm = Math.round((h - hh) * 60);
-    const pad = (n) => String(n).padStart(2, '0');
-    return pad(hh) + ':' + pad(mm);
-  }
 
-  // ---------- Construção estática ----------
-  function buildZones() {
-    zonesG.innerHTML = '';
-    // Dia: 06–18 ; Noite: 18–06
-    const day   = document.createElementNS(SVG_NS, 'path');
-    day.setAttribute('d', arcPath(CX, CY, 48, 12, hourToAngle(6), hourToAngle(18)));
-    day.setAttribute('fill', 'var(--day)');
-    zonesG.appendChild(day);
-
-    const night = document.createElementNS(SVG_NS, 'path');
-    night.setAttribute('d', arcPath(CX, CY, 48, 12, hourToAngle(18), hourToAngle(30))); // 18 -> 06 (next day)
-    night.setAttribute('fill', 'var(--night)');
-    zonesG.appendChild(night);
-  }
-
+  // ---------- Estática ----------
   function buildTicksAndHours() {
     ticksG.innerHTML = '';
     hoursG.innerHTML = '';
 
-    for (let i = 0; i < 24; i++) {
-      const angle = hourToAngle(i);
-      const major = i % 6 === 0;
-      const r1 = major ? 44.5 : 45.5;
+    // 60 marcações (cada minuto)
+    for (let i = 0; i < 60; i++) {
+      const angle = i * 6;
+      const major = i % 5 === 0;
+      const r1 = major ? 44 : 45.5;
       const r2 = 47;
       const p1 = polar(CX, CY, r1, angle);
       const p2 = polar(CX, CY, r2, angle);
       const line = document.createElementNS(SVG_NS, 'line');
-      line.setAttribute('x1', p1.x);
-      line.setAttribute('y1', p1.y);
-      line.setAttribute('x2', p2.x);
-      line.setAttribute('y2', p2.y);
+      line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+      line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
       line.setAttribute('class', major ? 'tick tick-major' : 'tick');
-      line.setAttribute('stroke-width', major ? 0.4 : 0.2);
+      line.setAttribute('stroke-width', major ? 0.45 : 0.2);
       ticksG.appendChild(line);
     }
 
-    // Números a cada 3h
-    for (let h = 0; h < 24; h += 3) {
-      const pos = polar(CX, CY, 42, hourToAngle(h));
+    // Números 1–12 (12 no topo)
+    for (let h = 1; h <= 12; h++) {
+      const angle = h * 30;
+      const pos = polar(CX, CY, 40.5, angle);
       const text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('x', pos.x);
-      text.setAttribute('y', pos.y);
-      const isMajor = (h % 6 === 0);
+      text.setAttribute('x', pos.x); text.setAttribute('y', pos.y);
+      const isMajor = (h % 3 === 0);
       text.setAttribute('class', 'hour-label' + (isMajor ? ' major' : ''));
-      text.textContent = String(h).padStart(2, '0');
+      text.textContent = h;
       hoursG.appendChild(text);
     }
   }
 
   // ---------- Eventos no relógio ----------
-  function eventsForDate(d) {
-    const key = dateKey(d);
-    return events
+  // Recorta eventos para a faixa do modo, criando sub-eventos clipados.
+  function eventsForView() {
+    const key = dateKey(viewDate);
+    const m = MODES[viewMode];
+    const list = events
       .filter(e => e.date === key)
-      .sort((a, b) => timeToHours(a.start) - timeToHours(b.start));
+      .map(e => ({
+        ...e,
+        startH: timeToHours(e.start),
+        endH:   timeToHours(e.end)
+      }))
+      .filter(e => e.endH > e.startH);
+
+    // Cada evento original gera 0+ segmentos visíveis neste modo
+    const segments = [];
+    list.forEach(ev => {
+      // Modo night: faixa [18, 30). Para evento que toca [0, 6] consideramos +24.
+      const candidates = [{ s: ev.startH, e: ev.endH }];
+      if (viewMode === 'night' && ev.startH < 6) {
+        candidates.push({ s: ev.startH + 24, e: ev.endH + 24 });
+      }
+      candidates.forEach(c => {
+        const s = Math.max(c.s, m.start);
+        const e = Math.min(c.e, m.end);
+        if (e > s) segments.push({ ev, s, e });
+      });
+    });
+
+    segments.sort((a, b) => a.s - b.s);
+    return segments;
   }
 
-  // Algoritmo guloso de alocação de tracks (rings concêntricos)
-  function assignTracks(list) {
-    const tracks = []; // cada track é um array de eventos sem sobreposição
-    list.forEach(ev => {
-      const s = timeToHours(ev.start);
-      const e = timeToHours(ev.end);
+  function assignTracks(segments) {
+    const tracks = [];
+    segments.forEach(seg => {
       let placed = false;
       for (let i = 0; i < tracks.length; i++) {
         const last = tracks[i][tracks[i].length - 1];
-        if (timeToHours(last.end) <= s) {
-          tracks[i].push(ev);
-          ev._track = i;
+        if (last.e <= seg.s) {
+          tracks[i].push(seg);
+          seg._track = i;
           placed = true;
           break;
         }
       }
       if (!placed) {
-        tracks.push([ev]);
-        ev._track = tracks.length - 1;
+        tracks.push([seg]);
+        seg._track = tracks.length - 1;
       }
     });
     return tracks.length;
@@ -562,54 +587,68 @@
 
   function renderEvents() {
     eventsG.innerHTML = '';
-    const list = eventsForDate(viewDate);
+    textPathsG.innerHTML = '';
+    const segments = eventsForView();
 
-    if (list.length === 0) {
-      emptyHintEl.textContent = 'Toque em + para adicionar um evento';
-    } else {
-      emptyHintEl.textContent = list.length + (list.length === 1 ? ' evento' : ' eventos');
+    if (segments.length === 0) {
+      const totalToday = events.filter(e => e.date === dateKey(viewDate)).length;
+      emptyHintEl.textContent = totalToday === 0
+        ? 'Toque em + para adicionar um evento'
+        : (totalToday + (totalToday === 1 ? ' evento no dia (outro período)' : ' eventos no dia (outro período)'));
+      return;
     }
+    const total = events.filter(e => e.date === dateKey(viewDate)).length;
+    emptyHintEl.textContent = total + (total === 1 ? ' evento' : ' eventos');
 
-    if (list.length === 0) return;
-
-    const trackCount = assignTracks(list);
-    const rOuterMax = 44;
-    const rInnerMin = 14;
+    const trackCount = assignTracks(segments);
+    const rOuterMax = 38;
+    const rInnerMin = 12;
     const totalSpace = rOuterMax - rInnerMin;
-    const trackWidth = Math.min(6, totalSpace / Math.max(trackCount, 1));
-    const gap = 0.6;
+    const trackWidth = Math.min(6.5, totalSpace / Math.max(trackCount, 1));
+    const gap = 0.5;
 
-    list.forEach(ev => {
-      const s = timeToHours(ev.start);
-      const e = timeToHours(ev.end);
-      if (e <= s) return;
+    segments.forEach(seg => {
+      const a1 = hourToAngle(seg.s, viewMode);
+      const a2 = hourToAngle(seg.e, viewMode);
 
-      const rOuter = rOuterMax - ev._track * trackWidth;
+      const rOuter = rOuterMax - seg._track * trackWidth;
       const rInner = rOuter - trackWidth + gap;
-      const a1 = hourToAngle(s);
-      const a2 = hourToAngle(e);
+      const midR   = (rOuter + rInner) / 2;
 
+      // Arco preenchido
       const path = document.createElementNS(SVG_NS, 'path');
       path.setAttribute('d', arcPath(CX, CY, rOuter, rInner, a1, a2));
-      path.setAttribute('fill', ev.color);
+      path.setAttribute('fill', seg.ev.color);
       path.setAttribute('class', 'event-arc');
-      path.setAttribute('data-id', ev.id);
-      path.addEventListener('click', () => openSheet(ev));
+      path.setAttribute('data-id', seg.ev.id);
+      path.addEventListener('click', () => openSheet(seg.ev));
       eventsG.appendChild(path);
 
-      // Rótulo no meio do arco se houver espaço
+      // Texto circular no centro do arco
       const arcDeg = a2 - a1;
-      if (arcDeg >= 18 && (rOuter - rInner) >= 3.5) {
-        const midAngle = (a1 + a2) / 2;
-        const midR = (rOuter + rInner) / 2;
-        const pos = polar(CX, CY, midR, midAngle);
+      if (arcDeg >= 14 && (rOuter - rInner) >= 3) {
+        const pathId = 'tp-' + seg.ev.id + '-' + seg._track + '-' + Math.round(seg.s * 60);
+        const tp = document.createElementNS(SVG_NS, 'path');
+        tp.setAttribute('id', pathId);
+        tp.setAttribute('d', textArcPath(CX, CY, midR, a1, a2));
+        tp.setAttribute('fill', 'none');
+        textPathsG.appendChild(tp);
+
+        // Estima largura disponível e trunca se necessário
+        const arcLengthPx = (Math.PI / 180) * arcDeg * midR;
+        const maxChars = Math.max(2, Math.floor(arcLengthPx / 1.3));
+        let title = seg.ev.title || '';
+        if (title.length > maxChars) title = title.slice(0, Math.max(1, maxChars - 1)) + '…';
+
         const text = document.createElementNS(SVG_NS, 'text');
-        text.setAttribute('x', pos.x);
-        text.setAttribute('y', pos.y);
         text.setAttribute('class', 'event-label');
-        const maxChars = Math.max(4, Math.floor(arcDeg / 4));
-        const title = ev.title.length > maxChars ? ev.title.slice(0, maxChars - 1) + '…' : ev.title;
-        text.textContent = title;
+        const textPath = document.createElementNS(SVG_NS, 'textPath');
+        textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#' + pathId);
+        textPath.setAttribute('href', '#' + pathId);
+        textPath.setAttribute('startOffset', '50%');
+        textPath.setAttribute('text-anchor', 'middle');
+        textPath.textContent = title;
+        text.appendChild(textPath);
         eventsG.appendChild(text);
       }
     });
@@ -621,19 +660,30 @@
     el.setAttribute('x2', p.x);
     el.setAttribute('y2', p.y);
   }
+
+  // Verdade só se o tempo atual estiver dentro da faixa visível do modo
+  function timeInsideViewMode() {
+    if (!isViewingToday()) return false;
+    const now = new Date();
+    const h = now.getHours();
+    if (viewMode === 'day')   return h >= 6 && h < 18;
+    return h >= 18 || h < 6;
+  }
+
   function updateHands() {
-    if (!isViewingToday()) {
+    if (!timeInsideViewMode()) {
       handHour.style.display = 'none';
       handMin.style.display = 'none';
       handSec.style.display = 'none';
       return;
     }
     const now = new Date();
-    const h = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
-    const m = now.getMinutes() + now.getSeconds()/60;
-    const s = now.getSeconds() + now.getMilliseconds()/1000;
-    setHand(handHour, hourToAngle(h), 26);
-    setHand(handMin,  (m / 60) * 360, 36);
+    // Em 12h: hora 0..12 mapeia para 0°..360°
+    const h12 = (now.getHours() % 12) + now.getMinutes()/60 + now.getSeconds()/3600;
+    const m   = now.getMinutes() + now.getSeconds()/60;
+    const s   = now.getSeconds() + now.getMilliseconds()/1000;
+    setHand(handHour, (h12 / 12) * 360, 24);
+    setHand(handMin,  (m / 60) * 360, 35);
     setHand(handSec,  (s / 60) * 360, 40);
     handHour.style.display = '';
     handMin.style.display = '';
@@ -659,20 +709,31 @@
     weekdayEl.textContent = WEEKDAYS_PT[viewDate.getDay()] + (isViewingToday() ? ' · HOJE' : '');
   }
 
+  function applyMode() {
+    const m = MODES[viewMode];
+    modeIcon.textContent = m.icon;
+    modeText.textContent = m.label;
+    modeLabel.classList.remove('day', 'night');
+    modeLabel.classList.add(m.className);
+
+    faceBg.setAttribute('fill', viewMode === 'day' ? 'url(#faceGradDay)' : 'url(#faceGradNight)');
+    faceTint.setAttribute('fill', viewMode === 'day' ? 'var(--day-tint)' : 'var(--night-tint)');
+  }
+
   function render() {
+    applyMode();
     updateHeader();
     renderEvents();
     updateTime();
   }
 
-  // ---------- Sheet (criar/editar) ----------
+  // ---------- Sheet ----------
   function buildColorGrid() {
     colorGrid.innerHTML = '';
     COLORS.forEach(c => {
       const swatch = document.createElement('div');
       swatch.className = 'color-swatch' + (c === selectedColor ? ' selected' : '');
       swatch.style.background = c;
-      swatch.dataset.color = c;
       swatch.addEventListener('click', () => {
         selectedColor = c;
         [...colorGrid.children].forEach(el => el.classList.remove('selected'));
@@ -697,7 +758,10 @@
       evTitle.value = '';
       const now = new Date();
       const pad = (n) => String(n).padStart(2, '0');
-      const hh = isViewingToday() ? now.getHours() : 9;
+      let hh = isViewingToday() ? now.getHours() : (viewMode === 'day' ? 9 : 20);
+      // Se o modo atual é noite mas a hora cai no dia, sugere uma hora do modo
+      if (viewMode === 'day'   && (hh < 6 || hh >= 18)) hh = 9;
+      if (viewMode === 'night' && (hh >= 6 && hh < 18)) hh = 20;
       evStart.value = pad(hh) + ':00';
       evEnd.value   = pad(Math.min(hh + 1, 23)) + ':00';
       selectedColor = COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -707,13 +771,11 @@
     backdrop.classList.add('open');
     sheet.classList.add('open');
   }
-
   function closeSheet() {
     backdrop.classList.remove('open');
     sheet.classList.remove('open');
     editingId = null;
   }
-
   function saveEvent() {
     const title = (evTitle.value || '').trim();
     const start = evStart.value;
@@ -726,25 +788,18 @@
     }
     if (editingId) {
       const ev = events.find(x => x.id === editingId);
-      if (ev) {
-        ev.title = title;
-        ev.start = start;
-        ev.end = end;
-        ev.color = selectedColor;
-      }
+      if (ev) { ev.title = title; ev.start = start; ev.end = end; ev.color = selectedColor; }
     } else {
       events.push({
         id: String(Date.now()) + Math.random().toString(36).slice(2, 6),
         date: dateKey(viewDate),
-        title, start, end,
-        color: selectedColor
+        title, start, end, color: selectedColor
       });
     }
     saveEvents();
     closeSheet();
     render();
   }
-
   function deleteEvent() {
     if (!editingId) return;
     if (!confirm('Excluir este evento?')) return;
@@ -754,11 +809,21 @@
     render();
   }
 
+  // ---------- Handlers ----------
+  function toggleMode() {
+    viewMode = (viewMode === 'day') ? 'night' : 'day';
+    render();
+  }
+
   addBtn.addEventListener('click', () => openSheet(null));
   btnCancel.addEventListener('click', closeSheet);
   backdrop.addEventListener('click', closeSheet);
   btnSave.addEventListener('click', saveEvent);
   btnDelete.addEventListener('click', deleteEvent);
+
+  modePrev.addEventListener('click', toggleMode);
+  modeNext.addEventListener('click', toggleMode);
+  modeLabel.addEventListener('click', toggleMode);
 
   prevBtn.addEventListener('click', () => {
     viewDate = startOfDay(new Date(viewDate.getTime() - 86400000));
@@ -773,28 +838,31 @@
     render();
   });
 
-  // Swipe horizontal navega entre dias (ignora se for sobre um evento)
-  let touchStartX = null, touchStartY = null, touchStartTarget = null;
+  // Swipe: horizontal = dia, vertical = modo
+  let tsX = null, tsY = null, tsTarget = null;
   const clockEl = document.querySelector('.clock');
   clockEl.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    touchStartTarget = e.target;
+    tsX = e.touches[0].clientX;
+    tsY = e.touches[0].clientY;
+    tsTarget = e.target;
   }, { passive: true });
   clockEl.addEventListener('touchend', (e) => {
-    if (touchStartX === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) > 60 && Math.abs(dy) < 40 &&
-        !(touchStartTarget && touchStartTarget.classList && touchStartTarget.classList.contains('event-arc'))) {
-      if (dx < 0) nextBtn.click(); else prevBtn.click();
+    if (tsX === null) return;
+    const dx = e.changedTouches[0].clientX - tsX;
+    const dy = e.changedTouches[0].clientY - tsY;
+    const onArc = tsTarget && tsTarget.classList && tsTarget.classList.contains('event-arc');
+    if (!onArc) {
+      if (Math.abs(dx) > 60 && Math.abs(dy) < 40) {
+        if (dx < 0) nextBtn.click(); else prevBtn.click();
+      } else if (Math.abs(dy) > 60 && Math.abs(dx) < 40) {
+        toggleMode();
+      }
     }
-    touchStartX = touchStartY = touchStartTarget = null;
+    tsX = tsY = tsTarget = null;
   });
 
   // ---------- Bootstrap ----------
-  buildZones();
   buildTicksAndHours();
   render();
 
