@@ -9,14 +9,19 @@
   :root {
     --bg: #0b0e14;
     --face: #11151d;
-    --face-2: #161b25;
     --ring: #1f2633;
     --text: #e7ecf3;
     --muted: #7c8699;
-    --accent: #ffb86b;
-    --accent-2: #6bd1ff;
-    --today: #ff5d73;
-    --selected: #ffd166;
+
+    --madrugada: #2a3a6b;
+    --manha:     #f0b259;
+    --tarde:     #e76f51;
+    --noite:     #4a3b7a;
+
+    --hand-hour:   #ffffff;
+    --hand-minute: #c9d2e0;
+    --hand-second: #ff5d73;
+
     --shadow: 0 10px 40px rgba(0, 0, 0, 0.55);
   }
 
@@ -51,13 +56,13 @@
     flex-shrink: 0;
   }
 
-  header .month-year {
+  .date-main {
     font-size: 22px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
 
-  header .weekday {
+  .weekday {
     font-size: 13px;
     color: var(--muted);
     margin-top: 4px;
@@ -89,65 +94,57 @@
     display: block;
   }
 
-  .month-label {
-    font-size: 5.2px;
-    fill: var(--muted);
-    text-anchor: middle;
-    dominant-baseline: middle;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    cursor: pointer;
-    transition: fill 0.2s ease;
-  }
-  .month-label.current { fill: var(--accent); }
-  .month-label:active { fill: var(--text); }
-
-  .day-label {
-    font-size: 3.6px;
+  .hour-label {
+    font-size: 4.2px;
     fill: var(--text);
     text-anchor: middle;
     dominant-baseline: middle;
-    font-weight: 500;
-    cursor: pointer;
-    transition: fill 0.2s ease;
+    font-weight: 600;
   }
-  .day-label.dim { fill: var(--muted); opacity: 0.5; }
-  .day-label.today {
-    fill: var(--today);
+  .hour-label.major { font-size: 5.4px; }
+
+  .period-label {
+    font-size: 3.4px;
+    fill: rgba(255, 255, 255, 0.85);
+    text-anchor: middle;
+    dominant-baseline: middle;
     font-weight: 700;
-    font-size: 4.4px;
-  }
-  .day-label.selected {
-    fill: var(--selected);
-    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
   }
 
-  .tick { stroke: var(--ring); }
-  .tick-major { stroke: var(--muted); }
+  .tick { stroke: rgba(255, 255, 255, 0.35); }
+  .tick-major { stroke: rgba(255, 255, 255, 0.7); }
 
-  .hand-month { stroke: var(--accent); stroke-linecap: round; }
-  .hand-day   { stroke: var(--accent-2); stroke-linecap: round; }
-  .hand-sec   { stroke: var(--today); stroke-linecap: round; }
+  .hand-hour   { stroke: var(--hand-hour);   stroke-linecap: round; }
+  .hand-minute { stroke: var(--hand-minute); stroke-linecap: round; }
+  .hand-second { stroke: var(--hand-second); stroke-linecap: round; }
 
-  .center-dot { fill: var(--text); }
+  .center-dot  { fill: var(--text); }
   .center-ring { fill: none; stroke: var(--ring); }
+
+  .now-marker { fill: var(--hand-second); }
 
   footer {
     width: 100%;
-    padding: 6px 20px 18px;
+    padding: 8px 20px 18px;
     text-align: center;
     flex-shrink: 0;
   }
 
-  .date-display {
-    font-size: 14px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
+  .time-display {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
   }
 
-  .date-display strong {
-    color: var(--text);
-    font-weight: 600;
+  .period-now {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
   }
 
   .controls {
@@ -159,7 +156,7 @@
   }
 
   .controls button {
-    background: var(--face-2);
+    background: #161b25;
     color: var(--text);
     border: 1px solid var(--ring);
     border-radius: 999px;
@@ -172,40 +169,21 @@
     transition: background 0.15s ease, transform 0.05s ease;
   }
   .controls button:active { background: var(--ring); transform: scale(0.97); }
-  .controls .today-btn { color: var(--accent); border-color: var(--accent); background: transparent; }
-
-  .legend {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 10px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .legend .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 4px;
-    vertical-align: middle;
-  }
-  .legend .m { background: var(--accent); }
-  .legend .d { background: var(--accent-2); }
-  .legend .s { background: var(--today); }
+  .controls .today-btn { color: var(--manha); border-color: var(--manha); background: transparent; }
 
   @media (max-height: 640px) {
     header { padding: 10px 20px 2px; }
-    header .month-year { font-size: 18px; }
-    header .weekday { font-size: 11px; margin-top: 2px; }
+    .date-main { font-size: 18px; }
+    .weekday { font-size: 11px; margin-top: 2px; }
     footer { padding: 4px 20px 10px; }
-    .clock { width: min(85vw, 85svh, 420px); }
+    .time-display { font-size: 22px; }
+    .clock { width: min(85vw, 80svh, 420px); }
   }
 </style>
 </head>
 <body>
   <header>
-    <div class="month-year" id="monthYear">—</div>
+    <div class="date-main" id="dateMain">—</div>
     <div class="weekday" id="weekday">—</div>
   </header>
 
@@ -213,23 +191,27 @@
     <div class="clock">
       <svg class="clock-face" viewBox="0 0 100 100" id="svg" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <radialGradient id="faceGrad" cx="50%" cy="40%" r="60%">
-            <stop offset="0%" stop-color="#1c2330"/>
+          <radialGradient id="faceGrad" cx="50%" cy="40%" r="65%">
+            <stop offset="0%"  stop-color="#1c2330"/>
             <stop offset="100%" stop-color="#0e131c"/>
           </radialGradient>
         </defs>
 
         <circle cx="50" cy="50" r="49" fill="url(#faceGrad)" stroke="#1f2633" stroke-width="0.4"/>
-        <circle cx="50" cy="50" r="44" fill="none" stroke="#1a212c" stroke-width="0.3"/>
-        <circle cx="50" cy="50" r="33" fill="none" stroke="#1a212c" stroke-width="0.3"/>
 
+        <g id="zones"></g>
+
+        <circle cx="50" cy="50" r="36" fill="url(#faceGrad)" stroke="rgba(255,255,255,0.08)" stroke-width="0.3"/>
+
+        <g id="periodLabels"></g>
         <g id="ticks"></g>
-        <g id="months"></g>
-        <g id="days"></g>
+        <g id="hourLabels"></g>
 
-        <line id="handMonth" class="hand-month" x1="50" y1="50" x2="50" y2="50" stroke-width="1.4"/>
-        <line id="handDay"   class="hand-day"   x1="50" y1="50" x2="50" y2="50" stroke-width="1.0"/>
-        <line id="handSec"   class="hand-sec"   x1="50" y1="50" x2="50" y2="50" stroke-width="0.4"/>
+        <circle id="nowMarker" class="now-marker" cx="50" cy="50" r="0.9"/>
+
+        <line id="handHour"   class="hand-hour"   x1="50" y1="50" x2="50" y2="50" stroke-width="1.6"/>
+        <line id="handMinute" class="hand-minute" x1="50" y1="50" x2="50" y2="50" stroke-width="1.0"/>
+        <line id="handSecond" class="hand-second" x1="50" y1="50" x2="50" y2="50" stroke-width="0.4"/>
 
         <circle class="center-ring" cx="50" cy="50" r="2.2" stroke-width="0.5"/>
         <circle class="center-dot"  cx="50" cy="50" r="1.1"/>
@@ -238,16 +220,12 @@
   </main>
 
   <footer>
-    <div class="date-display" id="dateDisplay">—</div>
+    <div class="time-display" id="timeDisplay">--:--:--</div>
+    <div class="period-now" id="periodNow">—</div>
     <div class="controls">
-      <button id="prevBtn" aria-label="Mês anterior">‹</button>
+      <button id="prevBtn" aria-label="Dia anterior">‹</button>
       <button class="today-btn" id="todayBtn">Hoje</button>
-      <button id="nextBtn" aria-label="Próximo mês">›</button>
-    </div>
-    <div class="legend">
-      <span><span class="dot m"></span>Mês</span>
-      <span><span class="dot d"></span>Dia</span>
-      <span><span class="dot s"></span>Hoje</span>
+      <button id="nextBtn" aria-label="Próximo dia">›</button>
     </div>
   </footer>
 
@@ -255,55 +233,115 @@
 (function () {
   'use strict';
 
-  const MONTHS_PT = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-  const MONTHS_PT_SHORT = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
   const WEEKDAYS_PT = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  const MONTHS_PT  = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+
+  // Faixas do dia (em horas decimais 0..24)
+  const PERIODS = [
+    { name: 'Madrugada', start:  0, end:  6, color: 'var(--madrugada)' },
+    { name: 'Manhã',     start:  6, end: 12, color: 'var(--manha)' },
+    { name: 'Tarde',     start: 12, end: 18, color: 'var(--tarde)' },
+    { name: 'Noite',     start: 18, end: 24, color: 'var(--noite)' },
+  ];
 
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const CX = 50, CY = 50;
 
-  const ticksG  = document.getElementById('ticks');
-  const monthsG = document.getElementById('months');
-  const daysG   = document.getElementById('days');
+  const zonesG    = document.getElementById('zones');
+  const ticksG    = document.getElementById('ticks');
+  const hoursG    = document.getElementById('hourLabels');
+  const periodsG  = document.getElementById('periodLabels');
 
-  const handMonth = document.getElementById('handMonth');
-  const handDay   = document.getElementById('handDay');
-  const handSec   = document.getElementById('handSec');
+  const handHour   = document.getElementById('handHour');
+  const handMin    = document.getElementById('handMinute');
+  const handSec    = document.getElementById('handSecond');
+  const nowMarker  = document.getElementById('nowMarker');
 
-  const monthYearEl = document.getElementById('monthYear');
-  const weekdayEl   = document.getElementById('weekday');
-  const dateDispEl  = document.getElementById('dateDisplay');
+  const dateMainEl = document.getElementById('dateMain');
+  const weekdayEl  = document.getElementById('weekday');
+  const timeEl     = document.getElementById('timeDisplay');
+  const periodNowEl= document.getElementById('periodNow');
 
   const prevBtn  = document.getElementById('prevBtn');
   const nextBtn  = document.getElementById('nextBtn');
   const todayBtn = document.getElementById('todayBtn');
 
-  const today = new Date();
-  const state = {
-    year: today.getFullYear(),
-    month: today.getMonth(),
-    selectedDay: today.getDate()
-  };
+  // Estado: dia exibido (00:00 daquele dia)
+  const today = startOfDay(new Date());
+  let viewDate = new Date(today.getTime());
+
+  function startOfDay(d) {
+    const x = new Date(d.getTime());
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+
+  // Em um relógio de 24h: hora 0 (meia-noite) no topo, 12 (meio-dia) embaixo.
+  // Ângulo em graus a partir de "12 horas" (topo), aumentando no sentido horário.
+  function hourToAngle(hour) {
+    return (hour / 24) * 360;
+  }
 
   function polar(cx, cy, r, angleDeg) {
     const a = (angleDeg - 90) * Math.PI / 180;
     return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
   }
 
-  function daysInMonth(year, month) {
-    return new Date(year, month + 1, 0).getDate();
+  function arcPath(cx, cy, rOuter, rInner, startAngle, endAngle) {
+    const largeArc = (endAngle - startAngle) > 180 ? 1 : 0;
+    const p1 = polar(cx, cy, rOuter, startAngle);
+    const p2 = polar(cx, cy, rOuter, endAngle);
+    const p3 = polar(cx, cy, rInner, endAngle);
+    const p4 = polar(cx, cy, rInner, startAngle);
+    return [
+      'M', p1.x, p1.y,
+      'A', rOuter, rOuter, 0, largeArc, 1, p2.x, p2.y,
+      'L', p3.x, p3.y,
+      'A', rInner, rInner, 0, largeArc, 0, p4.x, p4.y,
+      'Z'
+    ].join(' ');
   }
 
-  function buildTicks() {
+  function buildZones() {
+    zonesG.innerHTML = '';
+    const rOuter = 48;
+    const rInner = 36;
+    PERIODS.forEach(p => {
+      const a1 = hourToAngle(p.start);
+      const a2 = hourToAngle(p.end);
+      const path = document.createElementNS(SVG_NS, 'path');
+      path.setAttribute('d', arcPath(CX, CY, rOuter, rInner, a1, a2));
+      path.setAttribute('fill', p.color);
+      path.setAttribute('opacity', '0.78');
+      zonesG.appendChild(path);
+    });
+  }
+
+  function buildPeriodLabels() {
+    periodsG.innerHTML = '';
+    const rLabel = 42;
+    PERIODS.forEach(p => {
+      const mid = (p.start + p.end) / 2;
+      const pos = polar(CX, CY, rLabel, hourToAngle(mid));
+      const text = document.createElementNS(SVG_NS, 'text');
+      text.setAttribute('x', pos.x);
+      text.setAttribute('y', pos.y);
+      text.setAttribute('class', 'period-label');
+      text.textContent = p.name;
+      periodsG.appendChild(text);
+    });
+  }
+
+  function buildTicksAndHours() {
     ticksG.innerHTML = '';
-    for (let i = 0; i < 60; i++) {
-      const angle = i * 6;
-      const major = i % 5 === 0;
-      const r1 = major ? 46.5 : 47.2;
-      const r2 = 48.4;
+    hoursG.innerHTML = '';
+
+    // 48 traços (cada 30 min) — major a cada hora
+    for (let i = 0; i < 48; i++) {
+      const angle = (i / 48) * 360;
+      const major = i % 2 === 0;
+      const r1 = major ? 33.5 : 34.4;
+      const r2 = 35.6;
       const p1 = polar(CX, CY, r1, angle);
       const p2 = polar(CX, CY, r2, angle);
       const line = document.createElementNS(SVG_NS, 'line');
@@ -312,79 +350,21 @@
       line.setAttribute('x2', p2.x);
       line.setAttribute('y2', p2.y);
       line.setAttribute('class', major ? 'tick tick-major' : 'tick');
-      line.setAttribute('stroke-width', major ? 0.5 : 0.25);
+      line.setAttribute('stroke-width', major ? 0.45 : 0.2);
       ticksG.appendChild(line);
     }
-  }
 
-  function buildMonths() {
-    monthsG.innerHTML = '';
-    for (let m = 0; m < 12; m++) {
-      const angle = m * 30;
-      const p = polar(CX, CY, 41.5, angle);
+    // Números das horas a cada 3h (0, 3, 6, 9, 12, 15, 18, 21)
+    for (let h = 0; h < 24; h++) {
+      if (h % 3 !== 0) continue;
+      const pos = polar(CX, CY, 30.5, hourToAngle(h));
       const text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('x', p.x);
-      text.setAttribute('y', p.y);
-      text.setAttribute('class', 'month-label' + (m === state.month ? ' current' : ''));
-      text.textContent = MONTHS_PT_SHORT[m];
-      text.addEventListener('click', () => {
-        state.month = m;
-        if (state.selectedDay > daysInMonth(state.year, state.month)) {
-          state.selectedDay = daysInMonth(state.year, state.month);
-        }
-        render();
-      });
-      monthsG.appendChild(text);
-    }
-  }
-
-  function buildDays() {
-    daysG.innerHTML = '';
-    const total = daysInMonth(state.year, state.month);
-    const isCurrentMonth =
-      state.year === today.getFullYear() && state.month === today.getMonth();
-
-    for (let d = 1; d <= total; d++) {
-      const angle = ((d - 1) / total) * 360;
-      const p = polar(CX, CY, 28, angle);
-
-      const text = document.createElementNS(SVG_NS, 'text');
-      text.setAttribute('x', p.x);
-      text.setAttribute('y', p.y);
-
-      const classes = ['day-label'];
-      if (isCurrentMonth && d === today.getDate()) classes.push('today');
-      else if (d === state.selectedDay) classes.push('selected');
-      else if (total > 28 && d > 28 && d !== state.selectedDay) classes.push('dim');
-
-      text.setAttribute('class', classes.join(' '));
-      text.textContent = d;
-      text.addEventListener('click', () => {
-        state.selectedDay = d;
-        render();
-      });
-      daysG.appendChild(text);
-    }
-  }
-
-  function updateHands() {
-    const now = new Date();
-    const totalDays = daysInMonth(state.year, state.month);
-
-    const monthAngle = state.month * 30 + ((state.selectedDay - 1) / totalDays) * 30;
-    const dayAngle   = ((state.selectedDay - 1) / totalDays) * 360;
-
-    setHand(handMonth, monthAngle, 38);
-    setHand(handDay,   dayAngle, 26);
-
-    const isCurrentMonth =
-      state.year === today.getFullYear() && state.month === today.getMonth();
-    if (isCurrentMonth) {
-      const secAngle = now.getSeconds() * 6 + now.getMilliseconds() * 0.006;
-      setHand(handSec, secAngle, 44);
-      handSec.style.display = '';
-    } else {
-      handSec.style.display = 'none';
+      text.setAttribute('x', pos.x);
+      text.setAttribute('y', pos.y);
+      const isMajor = (h % 6 === 0);
+      text.setAttribute('class', 'hour-label' + (isMajor ? ' major' : ''));
+      text.textContent = String(h).padStart(2, '0');
+      hoursG.appendChild(text);
     }
   }
 
@@ -394,55 +374,90 @@
     el.setAttribute('y2', p.y);
   }
 
-  function updateHeader() {
-    monthYearEl.textContent = MONTHS_PT[state.month] + ' ' + state.year;
+  function currentPeriodName(hourDecimal) {
+    for (const p of PERIODS) {
+      if (hourDecimal >= p.start && hourDecimal < p.end) return p.name;
+    }
+    return 'Madrugada';
+  }
 
-    const dateObj = new Date(state.year, state.month, state.selectedDay);
-    weekdayEl.textContent = WEEKDAYS_PT[dateObj.getDay()];
+  function isViewingToday() {
+    return viewDate.getTime() === today.getTime();
+  }
 
-    const isToday =
-      state.year === today.getFullYear() &&
-      state.month === today.getMonth() &&
-      state.selectedDay === today.getDate();
+  function updateHands() {
+    const now = new Date();
+    const viewingToday = isViewingToday();
 
+    if (viewingToday) {
+      const h = now.getHours() + now.getMinutes()/60 + now.getSeconds()/3600;
+      const m = now.getMinutes() + now.getSeconds()/60;
+      const s = now.getSeconds() + now.getMilliseconds()/1000;
+
+      setHand(handHour, hourToAngle(h), 22);
+      setHand(handMin,  (m / 60) * 360, 30);
+      setHand(handSec,  (s / 60) * 360, 33);
+
+      const mark = polar(CX, CY, 33, hourToAngle(h));
+      nowMarker.setAttribute('cx', mark.x);
+      nowMarker.setAttribute('cy', mark.y);
+
+      handHour.style.display = '';
+      handMin.style.display = '';
+      handSec.style.display = '';
+      nowMarker.style.display = '';
+    } else {
+      handHour.style.display = 'none';
+      handMin.style.display = 'none';
+      handSec.style.display = 'none';
+      nowMarker.style.display = 'none';
+    }
+  }
+
+  function updateClock() {
+    const now = new Date();
     const pad = (n) => String(n).padStart(2, '0');
-    const dateStr = pad(state.selectedDay) + '/' + pad(state.month + 1) + '/' + state.year;
-    dateDispEl.innerHTML = (isToday ? '<strong>Hoje</strong> · ' : '') + dateStr;
+
+    if (isViewingToday()) {
+      timeEl.textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+      const h = now.getHours() + now.getMinutes()/60;
+      periodNowEl.textContent = currentPeriodName(h);
+    } else {
+      timeEl.textContent = '--:--:--';
+      periodNowEl.textContent = 'Outro dia';
+    }
+    updateHands();
+  }
+
+  function updateHeader() {
+    const d = viewDate.getDate();
+    const m = MONTHS_PT[viewDate.getMonth()];
+    const y = viewDate.getFullYear();
+    dateMainEl.textContent = d + ' de ' + m + ' de ' + y;
+    weekdayEl.textContent = WEEKDAYS_PT[viewDate.getDay()] + (isViewingToday() ? ' · HOJE' : '');
   }
 
   function render() {
-    buildMonths();
-    buildDays();
-    updateHands();
     updateHeader();
+    updateClock();
   }
 
   prevBtn.addEventListener('click', () => {
-    state.month--;
-    if (state.month < 0) { state.month = 11; state.year--; }
-    if (state.selectedDay > daysInMonth(state.year, state.month)) {
-      state.selectedDay = daysInMonth(state.year, state.month);
-    }
+    viewDate = new Date(viewDate.getTime() - 86400000);
+    viewDate = startOfDay(viewDate);
     render();
   });
-
   nextBtn.addEventListener('click', () => {
-    state.month++;
-    if (state.month > 11) { state.month = 0; state.year++; }
-    if (state.selectedDay > daysInMonth(state.year, state.month)) {
-      state.selectedDay = daysInMonth(state.year, state.month);
-    }
+    viewDate = new Date(viewDate.getTime() + 86400000);
+    viewDate = startOfDay(viewDate);
     render();
   });
-
   todayBtn.addEventListener('click', () => {
-    const now = new Date();
-    state.year = now.getFullYear();
-    state.month = now.getMonth();
-    state.selectedDay = now.getDate();
+    viewDate = startOfDay(new Date());
     render();
   });
 
+  // Swipe horizontal navega entre dias
   let touchStartX = null;
   const clockEl = document.querySelector('.clock');
   clockEl.addEventListener('touchstart', (e) => {
@@ -457,26 +472,22 @@
     touchStartX = null;
   });
 
-  buildTicks();
+  buildZones();
+  buildPeriodLabels();
+  buildTicksAndHours();
   render();
 
-  setInterval(() => {
-    const isCurrentMonth =
-      state.year === today.getFullYear() && state.month === today.getMonth();
-    if (isCurrentMonth) {
-      const now = new Date();
-      const secAngle = now.getSeconds() * 6 + now.getMilliseconds() * 0.006;
-      setHand(handSec, secAngle, 44);
-    }
-  }, 1000);
+  // Atualiza ponteiros e relógio a cada segundo
+  setInterval(updateClock, 1000);
 
+  // Detecta virada de dia
   setInterval(() => {
-    const now = new Date();
-    if (now.getDate() !== today.getDate()) {
-      today.setTime(now.getTime());
-      render();
+    const newToday = startOfDay(new Date());
+    if (newToday.getTime() !== today.getTime()) {
+      today.setTime(newToday.getTime());
+      if (isViewingToday()) render();
     }
-  }, 60000);
+  }, 30000);
 })();
 </script>
 </body>
