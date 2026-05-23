@@ -428,53 +428,38 @@
       'Z'
     ].join(' ');
   }
-  // Linha radial entre dois raios no mesmo ângulo (com leve curvatura no meio)
-  function smoothRadialLine(cx, cy, rA, rB, angleDeg) {
-    const pA = polar(cx, cy, rA, angleDeg);
-    const pB = polar(cx, cy, rB, angleDeg);
-    const mid = polar(cx, cy, (rA + rB) / 2, angleDeg);
-    return ['L', mid.x, mid.y, 'L', pB.x, pB.y].join(' ');
-  }
-  // Caminho com múltiplos segmentos (cotovelos entre anéis na fronteira)
-  function multiSegmentPath(segments) {
+  // Constrói o "d" de um evento: arcos principais por segmento + dentes
+  // alternados (zigue-zague) nas fronteiras dia/noite para a transição ficar
+  // visível. Um único <path> com múltiplos subpaths preenchidos pela mesma cor.
+  function buildEventPathD(segments) {
     if (segments.length === 0) return '';
-    if (segments.length === 1) {
-      const s = segments[0];
-      return ringSegmentPath(CX, CY, s.rOuter, s.rInner, s.a1, s.a2);
-    }
     const parts = [];
-    // contorno externo (ida)
-    const first = segments[0];
-    const startOuter = polar(CX, CY, first.rOuter, first.a1);
-    parts.push('M', startOuter.x, startOuter.y);
-    for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i];
-      const arcSpan = seg.a2 - seg.a1;
-      const largeArc = arcSpan > 180 ? 1 : 0;
-      const pOut = polar(CX, CY, seg.rOuter, seg.a2);
-      parts.push('A', seg.rOuter, seg.rOuter, 0, largeArc, 1, pOut.x, pOut.y);
-      if (i < segments.length - 1) {
-        const next = segments[i + 1];
-        // transição radial no ângulo de fronteira (seg.a2 === next.a1)
-        parts.push(smoothRadialLine(CX, CY, seg.rOuter, next.rOuter, seg.a2));
+
+    // Arcos principais (faixa completa de cada segmento, no anel correspondente)
+    segments.forEach(seg => {
+      parts.push(ringSegmentPath(CX, CY, seg.rOuter, seg.rInner, seg.a1, seg.a2));
+    });
+
+    // Dentes de transição em cada fronteira entre segmentos consecutivos
+    for (let i = 0; i < segments.length - 1; i++) {
+      const segA = segments[i], segB = segments[i + 1];
+      const boundary = segA.a2; // === segB.a1
+      const spanA = segA.a2 - segA.a1;
+      const spanB = segB.a2 - segB.a1;
+      // Zona de transição: até 4° em cada lado, limitada por 1/4 do menor segmento
+      const tw = Math.min(4, spanA / 4, spanB / 4);
+      if (tw < 0.4) continue;
+
+      const TEETH = 6; // dentes alternados entre os dois anéis
+      const slotW = (2 * tw) / TEETH;
+      for (let k = 0; k < TEETH; k++) {
+        const a1 = (boundary - tw) + k * slotW;
+        const a2 = a1 + slotW;
+        const useSeg = (k % 2 === 0) ? segA : segB;
+        parts.push(ringSegmentPath(CX, CY, useSeg.rOuter, useSeg.rInner, a1, a2));
       }
     }
-    // contorno interno (volta)
-    const last = segments[segments.length - 1];
-    const endInner = polar(CX, CY, last.rInner, last.a2);
-    parts.push('L', endInner.x, endInner.y);
-    for (let i = segments.length - 1; i >= 0; i--) {
-      const seg = segments[i];
-      const arcSpan = seg.a2 - seg.a1;
-      const largeArc = arcSpan > 180 ? 1 : 0;
-      const pIn = polar(CX, CY, seg.rInner, seg.a1);
-      parts.push('A', seg.rInner, seg.rInner, 0, largeArc, 0, pIn.x, pIn.y);
-      if (i > 0) {
-        const prev = segments[i - 1];
-        parts.push(smoothRadialLine(CX, CY, seg.rInner, prev.rInner, seg.a1));
-      }
-    }
-    parts.push('Z');
+
     return parts.join(' ');
   }
   // Caminho de texto: arco do raio do meio do segmento, invertido na metade inferior
@@ -639,9 +624,9 @@
         return { ring: s.ring, s: s.s, e: s.e, a1, a2, rOuter, rInner };
       });
 
-      // Path do evento (com cotovelos se houver múltiplos segmentos)
+      // Path do evento (com dentes em zigue-zague nas fronteiras dia/noite)
       const path = document.createElementNS(SVG_NS, 'path');
-      path.setAttribute('d', multiSegmentPath(segs));
+      path.setAttribute('d', buildEventPathD(segs));
       path.setAttribute('fill', item.ev.color);
       path.setAttribute('class', 'event-arc');
       path.setAttribute('data-id', item.ev.id);
