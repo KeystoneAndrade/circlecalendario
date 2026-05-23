@@ -108,13 +108,14 @@
   svg.clock-face { width: 100%; height: 100%; display: block; }
 
   .hour-label {
-    font-size: 5px;
+    font-size: 3.4px;
     fill: var(--text);
     text-anchor: middle;
     dominant-baseline: middle;
-    font-weight: 600;
+    font-weight: 500;
+    opacity: 0.7;
   }
-  .hour-label.major { font-size: 6px; }
+  .hour-label.major { font-weight: 600; opacity: 1; }
 
   .tick       { stroke: rgba(255, 255, 255, 0.22); }
   .tick-major { stroke: rgba(255, 255, 255, 0.55); }
@@ -295,8 +296,8 @@
           </radialGradient>
         </defs>
 
-        <circle id="faceBg" cx="50" cy="50" r="49" fill="url(#faceGradDay)" stroke="#1f2633" stroke-width="0.4"/>
-        <circle id="faceTint" cx="50" cy="50" r="48.5" fill="var(--day-tint)"/>
+        <circle id="faceBg" cx="50" cy="50" r="42" fill="url(#faceGradDay)" stroke="#1f2633" stroke-width="0.35"/>
+        <circle id="faceTint" cx="50" cy="50" r="41.7" fill="var(--day-tint)"/>
 
         <g id="ticks"></g>
         <g id="hourLabels"></g>
@@ -502,26 +503,27 @@
     ticksG.innerHTML = '';
     hoursG.innerHTML = '';
 
-    // 60 marcações (cada minuto)
-    for (let i = 0; i < 60; i++) {
-      const angle = i * 6;
-      const major = i % 5 === 0;
-      const r1 = major ? 44 : 45.5;
-      const r2 = 47;
+    // 24 marcações (uma a cada 30 minutos no mostrador 12h)
+    // Major nas horas cheias; minor nos meios.
+    for (let i = 0; i < 24; i++) {
+      const angle = i * 15;
+      const major = i % 2 === 0;
+      const r1 = major ? 38 : 39.5;
+      const r2 = 41;
       const p1 = polar(CX, CY, r1, angle);
       const p2 = polar(CX, CY, r2, angle);
       const line = document.createElementNS(SVG_NS, 'line');
       line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
       line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
       line.setAttribute('class', major ? 'tick tick-major' : 'tick');
-      line.setAttribute('stroke-width', major ? 0.45 : 0.2);
+      line.setAttribute('stroke-width', major ? 0.4 : 0.2);
       ticksG.appendChild(line);
     }
 
-    // Números 1–12 (12 no topo)
+    // Números 1–12 fora do mostrador
     for (let h = 1; h <= 12; h++) {
       const angle = h * 30;
-      const pos = polar(CX, CY, 40.5, angle);
+      const pos = polar(CX, CY, 46.5, angle);
       const text = document.createElementNS(SVG_NS, 'text');
       text.setAttribute('x', pos.x); text.setAttribute('y', pos.y);
       const isMajor = (h % 3 === 0);
@@ -682,9 +684,9 @@
     const h12 = (now.getHours() % 12) + now.getMinutes()/60 + now.getSeconds()/3600;
     const m   = now.getMinutes() + now.getSeconds()/60;
     const s   = now.getSeconds() + now.getMilliseconds()/1000;
-    setHand(handHour, (h12 / 12) * 360, 24);
-    setHand(handMin,  (m / 60) * 360, 35);
-    setHand(handSec,  (s / 60) * 360, 40);
+    setHand(handHour, (h12 / 12) * 360, 20);
+    setHand(handMin,  (m / 60) * 360, 30);
+    setHand(handSec,  (s / 60) * 360, 33);
     handHour.style.display = '';
     handMin.style.display = '';
     handSec.style.display = '';
